@@ -27,5 +27,5 @@ For explanation of command line arguments, execute: `java -jar Y-Generator.jar`.
 ## Postprocessing
 The generated **SWC** file contains the 1D line graph geometry and can be 
 converted to a full 3D geometry with embedded ER (scale factor 0.5) as an **UGX** file by:
-`../bin/ugshell -call "test_import_swc_with_er(\"Y-branch_angle=90.0.swc\", \"output_3d.ugx\", 0.5, 2, 0)"`
+`../bin/ugshell -call  ../bin/ugshell -call "test_import_swc_general_var(\"test_angle=90.0.swc\", false, 0.5, true, 1, 0, true, 1.0, false, false, 3)"`
 
