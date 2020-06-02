@@ -22,7 +22,9 @@ taper off at the branching point by a factor of 2 and the dendrites by a factor 
 `java -jar Y-Generator.jar`.
 
 ## Options
-For explanation of command line arguments, execute: `java -jar Y-Generator.jar`.
+For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:
+Usage: `Branch-Generator FILENAME LENGTH_PARENT LENGTH_LEFT_CHILD LENGTH_RIGHT_CHILD DIAMETER_PARENT BRANCHING_ANGLE NUM_POINTS [DIAM_BRANCHING_POINT] [DIAM_LEFT_CHILD] [DIAM_RIGHT_CHILD]`
+
 
 ## Postprocessing
 The generated **SWC** file contains the 1D line graph geometry and can be 
