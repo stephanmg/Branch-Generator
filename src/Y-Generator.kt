@@ -1,5 +1,6 @@
 import java.io.File
 import kotlin.math.*
+import kotlin.system.exitProcess
 
 /**
  * @brief create 2-way neuron branches
@@ -7,27 +8,72 @@ import kotlin.math.*
  * @param args collected command line arguments in an array of type String
  */
 fun main(args: Array<String>) {
-    when (args.size) {
-        6 -> {
-            println("Generating 2-way branch in file ${args[0]}_angle=${args[5]}.swc")
-            generateSWC(
-                "${args[0]}", args[1].toDouble(), args[2].toDouble(), args[3].toDouble(), args[4].toDouble(),
-                args[5].toDouble(), 2, args[4].toDouble() / 2, args[4].toDouble() / 10,
-                args[4].toDouble() / 10
-            )
+    // usage for program
+    val usage = {
+        val program = System.getProperty("sun.java.command").split(".")[0]
+        println("Usage: $program --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS")
+        println("       Additional options for the methods:")
+        println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH -l2 LEFT_CHILD_LENGTH")
+        println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
+    }
+
+    // parse arguments
+    fun getopt(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
+            acc: MutableList<MutableList<String>>, s: String ->
+        acc.apply {
+            if (s.startsWith('-')) add(mutableListOf(s))
+            else last().add(s)
         }
-        10 -> {
-            println("Generating 2-way branch in file ${args[0]}_angle=${args[5]}.swc")
-            generateSWC(
-                "${args[0]}", args[1].toDouble(), args[2].toDouble(), args[3].toDouble(), args[4].toDouble(),
-                args[5].toDouble(), args[6].toInt(), args[4].toDouble() / 2, args[4].toDouble() / 10,
-                args[4].toDouble() / 10
-            )
+    }.associate { it[0] to it.drop(1).firstOrNull() }
+
+    // no argument given, show usage
+    if (args.isEmpty()) {
+        usage()
+        exitProcess(1)
+    }
+
+    // otherwise get arguments
+    val mapping = getopt(args)
+    val msg: (String) -> String = { argument ->
+        usage()
+        println()
+        "Missing value for CLI argument $argument"
+    }
+
+    when (mapping["--method"]) {
+        "constant" -> {
+           generateSWC(
+               (mapping["--filename"] ?: error(msg("--filename"))).toString(),
+               (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
+               (mapping["--l1"] ?: error(msg("--l1"))).toDouble(),
+               (mapping["--l2"] ?: error(msg("--l2"))).toDouble(),
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble(),
+               (mapping["--angle"] ?: error(msg("--angle"))).toDouble(),
+               (mapping["--n"] ?: error(msg("--n"))).toInt(),
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/2,
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10,
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10
+           )
         }
+
+        "tapering" -> {
+            generateSWC(
+                (mapping["--filename"] ?: error(msg("--filename"))).toString(),
+                (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
+                (mapping["--l1"] ?: error(msg("--l1"))).toDouble(),
+                (mapping["--l2"] ?: error(msg("--l2"))).toDouble(),
+                (mapping["--d0"] ?: error(msg("--d0"))).toDouble(),
+                (mapping["--angle"] ?: error(msg("--angle"))).toDouble(),
+                (mapping["--n"] ?: error(msg("--n"))).toInt(),
+                (mapping["--d0"] ?: error(msg("--d0"))).toDouble(),
+                (mapping["--d1"] ?: error(msg("--d1"))).toDouble(),
+                (mapping["--d2"] ?: error(msg("--d2"))).toDouble()
+            )
+            /// TODO: Add correct tapering behaviour by linear interpolating in generateSWC method below
+        }
+
         else -> {
-            val program = System.getProperty("sun.java.command").split(".")[0]
-            println("Usage: $program FILENAME LENGTH_PARENT LENGTH_LEFT_CHILD LENGTH_RIGHT_CHILD " +
-                    "DIAMETER_PARENT BRANCHING_ANGLE [NUM_POINTS] [DIAM_BRANCHING_POINT] [DIAM_LEFT_CHILD] [DIAM_RIGHT_CHILD]")
+            usage()
         }
     }
 }
@@ -56,8 +102,8 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
     require(diamRightChild < lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
     require(diamBranchingPoint >= diamLeftChild && diamBranchingPoint >= diamRightChild) { "Branching point diameter expected to be greater or equal then childs' diameters"}
     require(diamParent >= diamBranchingPoint) { "Diameter of parent branch expected to be greater or equal than branching point's diameter"}
-
     print("Processing |======         |\r")
+
     /// angle
     val angleInRad = (angle/2.0 * PI / 180.0)
     val angleSign = sign(angle)
@@ -72,10 +118,10 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
     print("Processing |=============   |\r")
     File(filename + "_angle=" + angle + ".swc").printWriter().use { out ->
         /// parent branch ("root") before bifurcation
-        /// TODO: Add more points here on the root branch see below
         out.println("" + 1 + " 1 "  + a[0] + " " + a[1] + " " + a[2] + " " + diamParent + " " +  "-1") // soma
         out.println("" + 2 + " 3 "  + a[0] + " " + (2.5/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
-        /// out.println("" + 2 + " 3 "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // additional point for measuremnt
+        /// TODO: Add more points here on the root branch see below
+        /// out.println("" + 2 + " 3 "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // additional point for measurement
         out.println("" + 3 + " 3 " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "2") // BP
 
         /// first branch ("left child")
