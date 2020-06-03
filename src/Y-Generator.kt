@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     }
 
     // parse arguments
-    fun getopt(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
+    fun getArguments(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
             acc: MutableList<MutableList<String>>, s: String ->
                 acc.apply {
                     if (s.startsWith('-')) add(mutableListOf(s))
@@ -33,13 +33,14 @@ fun main(args: Array<String>) {
     }
 
     // otherwise get arguments
-    val mapping = getopt(args)
+    val mapping = getArguments(args)
     val msg: (String) -> String = { argument ->
         usage()
         println()
         "Missing value for CLI argument $argument"
     }
 
+    /// check which grid generation method to use
     when (mapping["--method"]) {
         "constant" -> {
            generateSWC(
@@ -73,6 +74,7 @@ fun main(args: Array<String>) {
             )
         }
 
+        /// if not any available options chosen exit gracefully
         else -> {
             usage()
         }
@@ -121,19 +123,23 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         if (onOff) startDiameter-(startDiameter-diam)/pointsPerBranch * currentPoint else diam
     }
 
+    /// SWC types
+    val somaType = 1
+    val dendType = 3
+
     /// writing file
     print("Processing |=============   |\r")
     File(filename + "_angle=" + angle + ".swc").printWriter().use { out ->
         /// parent branch ("root") before bifurcation
-        out.println("" + 1 + " 1 "  + a[0] + " " + a[1] + " " + a[2] + " " + diamParent + " " +  "-1") // soma
-        out.println("" + 2 + " 3 "  + a[0] + " " + (2.5/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
-        out.println("" + 3 + " 3 "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "2") // additional point for measurement
-        out.println("" + 4 + " 3 " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "3") // BP
+        out.println("" + 1 + " $somaType "  + a[0] + " " + a[1] + " " + a[2] + " " + diamParent + " " +  "-1") // soma
+        out.println("" + 2 + " $dendType "  + a[0] + " " + (2.5/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
+        out.println("" + 3 + " $dendType "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "2") // additional point for measurement
+        out.println("" + 4 + " $dendType " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "3") // BP
 
         /// first branch ("left child")
         var currentOffset = 5
         for (i in 0 until numPoints) {
-            out.println("" + (currentOffset + i) + " 3 " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
+            out.println("" + (currentOffset + i) + " $dendType " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
                     lengthLeftChild/numPoints*(i+1) * b[1] / lengthParent + " " + lengthLeftChild/numPoints*(i+1) * b[2] / lengthParent
                     + " " + taperDiameters(tapering, diamBranchingPoint, diamLeftChild, numPoints, i) + " " + (currentOffset + i - 1))
         }
@@ -142,7 +148,7 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         /// second branch ("right child")
         for (i in 0 until numPoints) {
             out.println(
-                "" + (currentOffset + i) + " 3 " + lengthRightChild / numPoints * (i + 1) * c[0] / lengthParent + " " +
+                "" + (currentOffset + i) + " $dendType " + lengthRightChild / numPoints * (i + 1) * c[0] / lengthParent + " " +
                         lengthRightChild / numPoints * (i + 1) * c[1] / lengthParent + " " + lengthRightChild / numPoints * (i + 1) * c[2] / lengthParent
                         + " " + taperDiameters(tapering, diamBranchingPoint, diamRightChild, numPoints, i) + " " + (currentOffset + i - 1 - (if (i == 0) numPoints else 0)))
         }

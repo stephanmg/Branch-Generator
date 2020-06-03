@@ -7,6 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e00eb9e-9935-4141-bf4d-f00f9bebf514" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/stephan.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/stephan.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Y-Generator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/Y-Generator.kt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -24,8 +25,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Y-Generator.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="130" column="120" selection-start-line="130" selection-start-column="120" selection-end-line="130" selection-end-column="120" />
+            <state relative-caret-position="-842">
+              <caret line="76" column="63" selection-start-line="76" selection-start-column="63" selection-end-line="76" selection-end-column="63" />
               <folding>
                 <element signature="e#0#73#0" expanded="true" />
               </folding>
@@ -173,8 +174,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Y-Generator.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="130" column="120" selection-start-line="130" selection-start-column="120" selection-end-line="130" selection-end-column="120" />
+        <state relative-caret-position="-842">
+          <caret line="76" column="63" selection-start-line="76" selection-start-column="63" selection-end-line="76" selection-end-column="63" />
           <folding>
             <element signature="e#0#73#0" expanded="true" />
           </folding>
