@@ -127,12 +127,11 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         /// parent branch ("root") before bifurcation
         out.println("" + 1 + " 1 "  + a[0] + " " + a[1] + " " + a[2] + " " + diamParent + " " +  "-1") // soma
         out.println("" + 2 + " 3 "  + a[0] + " " + (2.5/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
-        /// TODO: Add more points here and add tapering for root branch too, add additional measuring subsets
-        /// out.println("" + 2 + " 3 "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // additional point for measurement
-        out.println("" + 3 + " 3 " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "2") // BP
+        out.println("" + 3 + " 3 "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "2") // additional point for measurement
+        out.println("" + 4 + " 3 " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "3") // BP
 
         /// first branch ("left child")
-        var currentOffset = 4
+        var currentOffset = 5
         for (i in 0 until numPoints) {
             out.println("" + (currentOffset + i) + " 3 " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
                     lengthLeftChild/numPoints*(i+1) * b[1] / lengthParent + " " + lengthLeftChild/numPoints*(i+1) * b[2] / lengthParent
