@@ -24,12 +24,16 @@ taper off at the branching point by a factor of 2 and the dendrites by a factor 
 
 ## Options
 For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:
-`
-Usage: Branch_Generator_jar/Branch-Generator --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS
+
+
+`Usage: Branch_Generator_jar/Branch-Generator --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS`
+
        Additional options for the methods:
+       
           1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH -l2 LEFT_CHILD_LENGTH
+          
           2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT
-`
+
 
 ## Postprocessing
 The generated **SWC** file contains the 1D line graph geometry and can be 
