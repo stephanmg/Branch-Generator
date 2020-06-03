@@ -20,10 +20,10 @@ fun main(args: Array<String>) {
     // parse arguments
     fun getopt(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
             acc: MutableList<MutableList<String>>, s: String ->
-        acc.apply {
-            if (s.startsWith('-')) add(mutableListOf(s))
-            else last().add(s)
-        }
+                acc.apply {
+                    if (s.startsWith('-')) add(mutableListOf(s))
+                    else last().add(s)
+              }
     }.associate { it[0] to it.drop(1).firstOrNull() }
 
     // no argument given, show usage
@@ -52,7 +52,8 @@ fun main(args: Array<String>) {
                (mapping["--n"] ?: error(msg("--n"))).toInt(),
                (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/2,
                (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10,
-               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10,
+               false
            )
         }
 
@@ -67,9 +68,9 @@ fun main(args: Array<String>) {
                 (mapping["--n"] ?: error(msg("--n"))).toInt(),
                 (mapping["--d0"] ?: error(msg("--d0"))).toDouble(),
                 (mapping["--d1"] ?: error(msg("--d1"))).toDouble(),
-                (mapping["--d2"] ?: error(msg("--d2"))).toDouble()
+                (mapping["--d2"] ?: error(msg("--d2"))).toDouble(),
+                true
             )
-            /// TODO: Add correct tapering behaviour by linear interpolating in generateSWC method below
         }
 
         else -> {
@@ -92,10 +93,11 @@ fun main(args: Array<String>) {
  * @param diamBranchingPoint branching point diameter
  * @param diamLeftChild left child diameter
  * @param diamRightChild right child diameter
+ * @param tapering if true then dendrites are tapering off towards the tips
  */
 fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, lengthRightChild: Double,
                 diamParent:Double, angle:Double, numPoints:Int, diamBranchingPoint: Double,
-                diamLeftChild: Double, diamRightChild: Double) {
+                diamLeftChild: Double, diamRightChild: Double, tapering: Boolean) {
     /// check for a consistent user input
     require(0 < abs(angle) && abs(angle) <= 180) { "Angle (deg) must be in range ]0, 180] U [-180, -0[" }
     require(diamLeftChild < lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
@@ -114,6 +116,11 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
     val b = doubleArrayOf(lengthParent*cos(angleInRad+angleSign*PI/2.0), lengthParent*sin(angleInRad+angleSign*PI/2.0), 0.0);
     val c = doubleArrayOf(lengthParent*cos(-angleInRad+angleSign*PI/2.0), lengthParent*sin(-angleInRad+angleSign*PI/2.0), 0.0);
 
+    /// tapering
+    val taperDiameters: (Boolean, Double, Double, Int, Int) -> Double = { onOff, startDiameter, diam, pointsPerBranch, currentPoint ->
+        if (onOff) startDiameter-(startDiameter-diam)/pointsPerBranch * currentPoint else diam
+    }
+
     /// writing file
     print("Processing |=============   |\r")
     File(filename + "_angle=" + angle + ".swc").printWriter().use { out ->
@@ -129,7 +136,7 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         for (i in 0 until numPoints) {
             out.println("" + (currentOffset + i) + " 3 " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
                     lengthLeftChild/numPoints*(i+1) * b[1] / lengthParent + " " + lengthLeftChild/numPoints*(i+1) * b[2] / lengthParent
-                    + " " + diamLeftChild+ " " + (currentOffset + i - 1))
+                    + " " + taperDiameters(tapering, diamParent, diamLeftChild, numPoints, i) + " " + (currentOffset + i - 1))
         }
 
         currentOffset+=numPoints
@@ -138,7 +145,7 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
             out.println(
                 "" + (currentOffset + i) + " 3 " + lengthRightChild / numPoints * (i + 1) * c[0] / lengthParent + " " +
                         lengthRightChild / numPoints * (i + 1) * c[1] / lengthParent + " " + lengthRightChild / numPoints * (i + 1) * c[2] / lengthParent
-                        + " " + diamRightChild + " " + (currentOffset + i - 1 - (if (i == 0) numPoints else 0)))
+                        + " " + taperDiameters(tapering, diamParent, diamRightChild, numPoints, i) + " " + (currentOffset + i - 1 - (if (i == 0) numPoints else 0)))
         }
     }
     print("Done       |================|\n")
