@@ -22,6 +22,9 @@ taper off at the branching point by a factor of 2 and the dendrites by a factor 
 5 with two points per branch. Additionally parameters to adjust can be displaye via:
 `java -jar Y-Generator.jar`.
 
+## Usage (tapering)
+`java -jar Branch-Generator.jar --method tapering --filename test --l0 100 --l1 100 --l2 100 --d0 10 --angle 90 --n 2 --d1 5 --d2 5`
+
 ## Options
 For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:
 
