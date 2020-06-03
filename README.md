@@ -25,8 +25,9 @@ taper off at the branching point by a factor of 2 and the dendrites by a factor 
 ## Options
 For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:
 
+Usage:
 
-`Usage: Branch_Generator_jar/Branch-Generator --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS`
+`Branch_Generator_jar/Branch-Generator --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS`
 
        Additional options for the methods:
        
