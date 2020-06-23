@@ -51,3 +51,6 @@ converted to a full 3D geometry with embedded ER (scale factor 0.5 for example a
 in the **UGX** file format by invoking the following `ugshell` **call**:
 `../bin/ugshell -call  ../bin/ugshell -call "create_two_way_branch_from_swc(\"test_angle=90.0.swc\", 0.5, 2)"
 
+
+# References
+Rall W, Rinzel J. Branch input resistance and steady attenuation for input to one branch of a dendritic neuron model. Biophys J. 1973;13(7):648-687. doi:10.1016/S0006-3495(73)86014-X
