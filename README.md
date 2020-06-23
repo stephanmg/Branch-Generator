@@ -49,7 +49,8 @@ Usage:
 The generated **SWC** file contains the 1D line graph geometry and can be 
 converted to a full 3D geometry with embedded ER (scale factor 0.5 for example and 2 refinements) 
 in the **UGX** file format by invoking the following `ugshell` **call**:
-`../bin/ugshell -call  ../bin/ugshell -call "create_two_way_branch_from_swc(\"test_angle=90.0.swc\", 0.5, 2)"
+
+` ../bin/ugshell -call  ../bin/ugshell -call "create_two_way_branch_from_swc(\"test_angle=90.0.swc\", 0.5, 2)" `
 
 
 # References
