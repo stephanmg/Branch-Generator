@@ -51,9 +51,9 @@ fun main(args: Array<String>) {
                (mapping["--d0"] ?: error(msg("--d0"))).toDouble(),
                (mapping["--angle"] ?: error(msg("--angle"))).toDouble(),
                (mapping["--n"] ?: error(msg("--n"))).toInt(),
-               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/2,
-               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10,
-               (mapping["--d0"] ?: error(msg("--d0"))).toDouble()/10,
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble(), // was / 2
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble(), // was / 10
+               (mapping["--d0"] ?: error(msg("--d0"))).toDouble(), // was / 10
                false
            )
         }
@@ -102,8 +102,8 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
                 diamLeftChild: Double, diamRightChild: Double, tapering: Boolean) {
     /// check for a consistent user input
     require(0 < abs(angle) && abs(angle) <= 180) { "Angle (deg) must be in range ]0, 180] U [-180, -0[" }
-    require(diamLeftChild < lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
-    require(diamRightChild < lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
+    require(diamLeftChild <= lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
+    require(diamRightChild <= lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
     require(diamBranchingPoint >= diamLeftChild && diamBranchingPoint >= diamRightChild) { "Branching point diameter expected to be greater or equal then childs' diameters"}
     require(diamParent >= diamBranchingPoint) { "Diameter of parent branch expected to be greater or equal than branching point's diameter"}
     print("Processing |======         |\r")
