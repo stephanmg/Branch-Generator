@@ -15,6 +15,7 @@ fun main(args: Array<String>) {
         println("       Additional options for the methods:")
         println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH -l2 LEFT_CHILD_LENGTH")
         println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
+        println("          3. RALL: --r0 PARENT_BRANCH_RADIUS -r1 LEFT_CHILD_RADIUS -r2 RIGHT_CHILD_RADIUS")
     }
 
     // parse arguments
@@ -72,6 +73,10 @@ fun main(args: Array<String>) {
                 (mapping["--d2"] ?: error(msg("--d2"))).toDouble(),
                 true
             )
+        }
+
+        "rall" -> {
+            error("Not yet implemented.")
         }
 
         /// if not any available options chosen exit gracefully
