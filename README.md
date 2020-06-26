@@ -29,6 +29,9 @@ taper off at the branching point by a factor of 2 and the dendrites by a factor 
 According to Rall and Rinzel 1973 the sum of radii of child branches at each branching point raised to the power of 3/2 must equal
 the parent branch radius also raised to the power of 3/2 (Rall's 3/2 power rule). The user can specify these radii with method *Rall*.
 
+## Usage (linear)
+`java -jar Branch-Generator.jar method linear --filename unbranched --l0 10 --r0 2 --r1 1 --n 10`.
+
 ## Options
 For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:
 
@@ -43,6 +46,8 @@ Usage:
           2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT
 
           3. RALL: --r0 RADIUS_PARENT_BRANCHR --r1 RADIUS_LEFT_CHILD --r2 RADIUS_RIGHT_CHILD
+
+          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS 
 
 
 ## Postprocessing

@@ -3,7 +3,7 @@ import kotlin.math.*
 import kotlin.system.exitProcess
 
 /**
- * @brief create 2-way neuron branches
+ * @brief create 2-way neuron branches and linear cables
  * @author stephanmg <stephan@syntaktischer-zucker.de>
  * @param args collected command line arguments in an array of type String
  */
@@ -16,10 +16,10 @@ fun main(args: Array<String>) {
         println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH --l2 LEFT_CHILD_LENGTH")
         println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
         println("          3. RALL: --r0 PARENT_BRANCH_RADIUS --r1 LEFT_CHILD_RADIUS --r2 RIGHT_CHILD_RADIUS")
-        println("          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS ")
+        println("          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS")
     }
 
-    // parse arguments
+    // parse CLI arguments
     fun getArguments(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
             acc: MutableList<MutableList<String>>, s: String ->
                 acc.apply {
@@ -34,7 +34,7 @@ fun main(args: Array<String>) {
         exitProcess(1)
     }
 
-    // otherwise get arguments
+    // otherwise get arguments by applying name mapping to variable
     val mapping = getArguments(args)
     val msg: (String) -> String = { argument ->
         usage()
@@ -42,8 +42,9 @@ fun main(args: Array<String>) {
         "Missing value for CLI argument $argument"
     }
 
-    /// check which grid generation method to use
+    // check which grid generation method to use
     when (mapping["--method"]) {
+        // constant radii method for two way branches
         "constant" -> {
             generateTwoWayBranch(
                (mapping["--filename"] ?: error(msg("--filename"))).toString(),
@@ -60,6 +61,7 @@ fun main(args: Array<String>) {
            )
         }
 
+        // tapering from soma to branching point to tip of neurites
         "tapering" -> {
             generateTwoWayBranch(
                 (mapping["--filename"] ?: error(msg("--filename"))).toString(),
@@ -76,21 +78,23 @@ fun main(args: Array<String>) {
             )
         }
 
+        // Rall's 3/2 power rule for child neurites wrt parent's radius
         "rall" -> {
             error("Not yet implemented.")
         }
 
+        // linear strategy will create an unbranched cable
         "linear" -> {
             generateLinearCable(
                 (mapping["--filename"] ?: error(msg("--filename"))).toString(),
-                (mapping["--r0"] ?: error(msg("--r0"))).toDouble(),
                 (mapping["--r1"] ?: error(msg("--r1"))).toDouble(),
+                (mapping["--r0"] ?: error(msg("--r0"))).toDouble(),
                 (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
                 (mapping["--n"] ?: error(msg("--n"))).toInt()
             )
         }
 
-        /// if not any available options chosen exit gracefully
+        // if not any available options chosen exit gracefully and print usage
         else -> {
             usage()
         }
@@ -115,11 +119,11 @@ enum class SWCType(val id: Int) {
  * @param lengthCable length of cable
  * @param numPoints refinement
  */
-fun generateLinearCable(filename: String, startRadius: Double, endRadius: Double, lengthCable: Double, numPoints: Int) {
+fun generateLinearCable(filename: String, endRadius: Double, startRadius: Double, lengthCable: Double, numPoints: Int) {
     print("Processing |=============   |\r")
     File("${filename}_r0=${startRadius}_r1=${endRadius}_l0=${lengthCable}_n=${numPoints}.swc").printWriter().use { out ->
         out.println("1 ${SWCType.SOMA.id} 0 0 0 $startRadius -1") // soma points
-        val radIncrement = (startRadius - endRadius) / numPoints
+        val radIncrement = (endRadius - startRadius) / numPoints
         val distIncrement = lengthCable / numPoints
         for (i in 2 until numPoints) { // dendrite points
             out.println("$i ${SWCType.DEND.id} ${distIncrement*(i-1)} 0 0 ${startRadius+radIncrement*(i-1)} ${i - 1}")
