@@ -13,9 +13,10 @@ fun main(args: Array<String>) {
         val program = System.getProperty("sun.java.command").split(".")[0]
         println("Usage: $program --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS")
         println("       Additional options for the methods:")
-        println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH -l2 LEFT_CHILD_LENGTH")
+        println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH --l2 LEFT_CHILD_LENGTH")
         println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
-        println("          3. RALL: --r0 PARENT_BRANCH_RADIUS -r1 LEFT_CHILD_RADIUS -r2 RIGHT_CHILD_RADIUS")
+        println("          3. RALL: --r0 PARENT_BRANCH_RADIUS --r1 LEFT_CHILD_RADIUS --r2 RIGHT_CHILD_RADIUS")
+        println("          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS ")
     }
 
     // parse arguments
@@ -44,7 +45,7 @@ fun main(args: Array<String>) {
     /// check which grid generation method to use
     when (mapping["--method"]) {
         "constant" -> {
-           generateSWC(
+            generateTwoWayBranch(
                (mapping["--filename"] ?: error(msg("--filename"))).toString(),
                (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
                (mapping["--l1"] ?: error(msg("--l1"))).toDouble(),
@@ -60,7 +61,7 @@ fun main(args: Array<String>) {
         }
 
         "tapering" -> {
-            generateSWC(
+            generateTwoWayBranch(
                 (mapping["--filename"] ?: error(msg("--filename"))).toString(),
                 (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
                 (mapping["--l1"] ?: error(msg("--l1"))).toDouble(),
@@ -79,10 +80,51 @@ fun main(args: Array<String>) {
             error("Not yet implemented.")
         }
 
+        "linear" -> {
+            generateLinearCable(
+                (mapping["--filename"] ?: error(msg("--filename"))).toString(),
+                (mapping["--r0"] ?: error(msg("--r0"))).toDouble(),
+                (mapping["--r1"] ?: error(msg("--r1"))).toDouble(),
+                (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
+                (mapping["--n"] ?: error(msg("--n"))).toInt()
+            )
+        }
+
         /// if not any available options chosen exit gracefully
         else -> {
             usage()
         }
+    }
+}
+
+/**
+ * @brief available SWC types
+ * For now dendrite and soma can be chosen
+ * @param id
+ */
+enum class SWCType(val id: Int) {
+    SOMA(1),
+    DEND(3)
+}
+
+/**
+ * @brief generate a linear (unbranched) cable
+ * @param filename output name
+ * @param startRadius radius at start point
+ * @param endRadius radius at end point
+ * @param lengthCable length of cable
+ * @param numPoints refinement
+ */
+fun generateLinearCable(filename: String, startRadius: Double, endRadius: Double, lengthCable: Double, numPoints: Int) {
+    print("Processing |=============   |\r")
+    File("${filename}_r0=${startRadius}_r1=${endRadius}_l0=${lengthCable}_n=${numPoints}.swc").printWriter().use { out ->
+        out.println("1 ${SWCType.SOMA.id} 0 0 0 $startRadius -1") // soma points
+        val radIncrement = (startRadius - endRadius) / numPoints
+        val distIncrement = lengthCable / numPoints
+        for (i in 2 until numPoints) { // dendrite points
+            out.println("$i ${SWCType.DEND.id} ${distIncrement*(i-1)} 0 0 ${startRadius+radIncrement*(i-1)} ${i - 1}")
+        }
+        print("Done       |================|\n")
     }
 }
 
@@ -102,9 +144,9 @@ fun main(args: Array<String>) {
  * @param diamRightChild right child diameter
  * @param tapering if true then dendrites are tapering off towards the tips
  */
-fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, lengthRightChild: Double,
-                diamParent:Double, angle:Double, numPoints:Int, diamBranchingPoint: Double,
-                diamLeftChild: Double, diamRightChild: Double, tapering: Boolean) {
+fun generateTwoWayBranch(filename: String, lengthParent:Double, lengthLeftChild: Double, lengthRightChild: Double,
+                            diamParent:Double, angle:Double, numPoints:Int, diamBranchingPoint: Double,
+                            diamLeftChild: Double, diamRightChild: Double, tapering: Boolean) {
     /// check for a consistent user input
     require(0 < abs(angle) && abs(angle) <= 180) { "Angle (deg) must be in range ]0, 180] U [-180, -0[" }
     require(diamLeftChild <= lengthLeftChild) { "Diameter of left child expected to be smaller than corresponding length"}
@@ -128,23 +170,20 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         if (onOff) startDiameter-(startDiameter-diam)/pointsPerBranch * currentPoint else diam
     }
 
-    /// SWC types
-    val somaType = 1
-    val dendType = 3
-
     /// writing file
     print("Processing |=============   |\r")
-    File(filename + "_angle=" + angle + ".swc").printWriter().use { out ->
+    File("${filename}_angle=$angle.swc").printWriter().use { out ->
         /// parent branch ("root") before bifurcation
-        out.println("" + 1 + " $somaType "  + a[0] + " " + a[1] + " " + a[2] + " " + diamParent + " " +  "-1") // soma
-        out.println("" + 2 + " $dendType "  + a[0] + " " + (2.5/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
-        out.println("" + 3 + " $dendType "  + a[0] + " " + (1.0/3.0)*a[1] + " " + a[2] + " " + diamParent + " " +  "2") // additional point for measurement
-        out.println("" + 4 + " $dendType " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "3") // BP
+        out.println("" + 1 + " ${SWCType.SOMA.id} "  + a[0] + " " + (a[1]-lengthParent) + " " + a[2] + " " + diamParent + " " +  "-1") // soma
+        out.println("" + 2 + " ${SWCType.DEND.id} "  + a[0] + " " + ((2.5/3.0)*a[1]-lengthParent) + " " + a[2] + " " + diamParent + " " +  "1") // neurite before BP
+        out.println("" + 3 + " ${SWCType.DEND.id} "  + a[0] + " " + ((1.0/3.0)*a[1]-lengthParent) + " " + a[2] + " " + diamParent + " " +  "2") // additional point for measurement
+        out.println("" + 4 + " ${SWCType.DEND.id} "  + a[0] + " " + (-((1.0/3.0)*a[1]+lengthParent)) + " " + a[2] + " " + diamParent + " " +  "3") // additional point for measurement
+        out.println("" + 5 + " ${SWCType.DEND.id} " + center[0] + " " + center[1] + " " + center[2] + " " + diamBranchingPoint + " " + "4") // BP
 
         /// first branch ("left child")
-        var currentOffset = 5
+        var currentOffset = 6
         for (i in 0 until numPoints) {
-            out.println("" + (currentOffset + i) + " $dendType " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
+            out.println("" + (currentOffset + i) + " ${SWCType.DEND.id} " + lengthLeftChild/numPoints*(i+1) * b[0] / lengthParent + " " +
                     lengthLeftChild/numPoints*(i+1) * b[1] / lengthParent + " " + lengthLeftChild/numPoints*(i+1) * b[2] / lengthParent
                     + " " + taperDiameters(tapering, diamBranchingPoint, diamLeftChild, numPoints, i) + " " + (currentOffset + i - 1))
         }
@@ -153,7 +192,7 @@ fun generateSWC(filename: String, lengthParent:Double, lengthLeftChild: Double, 
         /// second branch ("right child")
         for (i in 0 until numPoints) {
             out.println(
-                "" + (currentOffset + i) + " $dendType " + lengthRightChild / numPoints * (i + 1) * c[0] / lengthParent + " " +
+                "" + (currentOffset + i) + " ${SWCType.DEND.id} " + lengthRightChild / numPoints * (i + 1) * c[0] / lengthParent + " " +
                         lengthRightChild / numPoints * (i + 1) * c[1] / lengthParent + " " + lengthRightChild / numPoints * (i + 1) * c[2] / lengthParent
                         + " " + taperDiameters(tapering, diamBranchingPoint, diamRightChild, numPoints, i) + " " + (currentOffset + i - 1 - (if (i == 0) numPoints else 0)))
         }
