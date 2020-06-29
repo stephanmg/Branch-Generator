@@ -1,6 +1,8 @@
 # Y-Generator
-Generates 2-way dendritic branches with variable branching angle and branch lengths starting from a simple point soma.
-*Note*: If you had previously a local copy (clone) of this repository, this is not further maintained. The repository now reflects a clean from scratch code base.
+Generates 2-way dendritic branches with variable branching angle and branch lengths 
+as well as linear branches. A simple single point soma wull be included as well.
+
+[![Build Status](https://travis-ci.org/stephanmg/Branch-Generator.svg?branch=master)](https://travis-ci.org/stephanmg/Branch-Generator)
 
 ## Build
 - Clone this repository
