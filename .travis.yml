@@ -19,6 +19,7 @@ before_install:
   - sdk install kotlin
 
 script:
+- ls -al
 - cd "/home/travis/"
 - ls -al
 - kotlinc Branch-Generator/src/Branch-Generator.kt
