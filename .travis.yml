@@ -13,8 +13,13 @@ dist:
 env:
 - TERM=dumb
 
+before_install:
+  - curl -s https://get.sdkman.io | bash
+  - source "/home/travis/.sdkman/bin/sdkman-init.sh"
+  - sdk install kotlin
+
 script:
-- ant 
+- kotlinc src/Branch-Generator.kt
 
 notifications:
   email:
