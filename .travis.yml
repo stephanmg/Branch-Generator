@@ -21,9 +21,9 @@ env:
 
 before_install:
   - curl -s https://get.sdkman.io | bash
-  - [[ "$TRAVIS_OS_NAME" == "linux" ]] && source "/home/travis/.sdkman/bin/sdkman-init.sh"
-  - [[ "$TRAVIS_OS_NAME" == "osx" ]] && source "/Users/travis/.sdkman/bin/sdkman-init.sh"
-  - sdk install kotlin
+  - "if [ \"$TRAVIS_OS_NAME\" == \"linux\" ]; then source \"/home/travis/.sdkman/bin/sdkman-init.sh\"; fi"
+  - "if [ \"$TRAVIS_OS_NAME\" == \"osx\" ]; then source \"/Users/travis/.sdkman/bin/sdkman-init.sh\"; fi"
+  - "sdk install kotlin"
 
 script:
 - kotlinc src/BranchGenerator.kt
