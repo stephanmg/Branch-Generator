@@ -1,3 +1,7 @@
+os:
+  - linux
+  - osx
+
 language: java
 addons:
   apt:
@@ -5,7 +9,12 @@ addons:
       - ant
 
 jdk:
-- openjdk8
+  - oraclejdk7
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk7
+  - openjdk8
+  - openjdk9
 
 dist:
 - xenial
