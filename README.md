@@ -1,4 +1,4 @@
-# Y-Generator
+# Branch-Generator
 Generates 2-way dendritic branches with variable branching angle and branch lengths starting from a simple point soma.
 *Note*: If you had previously a local copy (clone) of this repository, this is not further maintained. The repository now reflects a clean from scratch code base.
 
