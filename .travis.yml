@@ -13,8 +13,8 @@ dist:
 env:
 - TERM=dumb
 
-build:
-- ant all
+script:
+- ant 
 
 notifications:
   email:
