@@ -14,7 +14,7 @@ env:
 - TERM=dumb
 
 build:
-- ant
+- ant all
 
 notifications:
   email:
