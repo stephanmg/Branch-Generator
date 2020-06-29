@@ -1,6 +1,5 @@
 image: Visual Studio 2019
 
-
 install:
   - ps: Start-FileDownload  https://github.com/JetBrains/kotlin/releases/download/v1.3.72/kotlin-native-windows-1.3.72.zip 
   - 7z e -y kotlin-native-windows-1.3.72.zip
@@ -8,4 +7,4 @@ install:
 build_script:
   - SET JAVA_HOME=C:\Program Files\Java\jdk11
   - SET PATH=%JAVA_HOME%\bin;%PATH%
-  - kotlinc src\BranchGenerator.kt
+  - kotlin-native-windows/bin/kotlinc src\BranchGenerator.kt
