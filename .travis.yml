@@ -2,13 +2,6 @@ os:
   - linux
   - osx
 
-matrix:
-  exclude:
-    - os: linux
-      env: BADGE=osx
-    - os: osx
-      env: BADGE=linux
-
 language: java
 addons:
   apt:
@@ -28,7 +21,11 @@ env:
 
 before_install:
   - curl -s https://get.sdkman.io | bash
-  - source "/home/travis/.sdkman/bin/sdkman-init.sh"
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      .  "/home/travis/.sdkman/bin/sdkman-init.sh"
+    else
+      . "/Users/travis/.sdkman/bin/sdkman-init.sh"
+    fi
   - sdk install kotlin
 
 script:
