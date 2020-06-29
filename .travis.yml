@@ -10,7 +10,6 @@ addons:
 
 jdk:
   - oraclejdk9
-  - openjdk8
   - openjdk9
 
 dist:
