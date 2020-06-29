@@ -19,7 +19,7 @@ before_install:
   - sdk install kotlin
 
 script:
-- kotlinc src/Branch-Generator.kt
+- kotlinc stephanmg/Branch-Generator src/Branch-Generator.kt
 
 notifications:
   email:
