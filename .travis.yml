@@ -21,11 +21,8 @@ env:
 
 before_install:
   - curl -s https://get.sdkman.io | bash
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      .  "/home/travis/.sdkman/bin/sdkman-init.sh"
-    else
-      . "/Users/travis/.sdkman/bin/sdkman-init.sh"
-    fi
+  - [[ "$TRAVIS_OS_NAME" == "linux" ]] && source "/home/travis/.sdkman/bin/sdkman-init.sh"
+  - [[ "$TRAVIS_OS_NAME" == "osx" ]] && source "/Users/travis/.sdkman/bin/sdkman-init.sh"
   - sdk install kotlin
 
 script:
