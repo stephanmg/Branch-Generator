@@ -2,6 +2,13 @@ os:
   - linux
   - osx
 
+matrix:
+  exclude:
+    - os: linux
+      env: BADGE=osx
+    - os: osx
+      env: BADGE=linux
+
 language: java
 addons:
   apt:
