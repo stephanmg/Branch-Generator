@@ -3,6 +3,7 @@ Generates 2-way dendritic branches with variable branching angle and branch leng
 as well as linear branches. A simple single point soma wull be included as well.
 
 [![Build Status](https://travis-ci.org/stephanmg/Branch-Generator.svg?branch=master)](https://travis-ci.org/stephanmg/Branch-Generator)
+[![License: Artistic-2.0](https://img.shields.io/badge/License-Artistic%202.0-0298c3.svg)](https://opensource.org/licenses/Artistic-2.0)
 
 ## Build
 - Clone this repository
