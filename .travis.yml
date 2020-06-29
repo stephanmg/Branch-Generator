@@ -1,0 +1,23 @@
+language: java
+addons:
+  apt:
+    packages:
+      - ant
+
+jdk:
+- openjdk8
+
+dist:
+- xenial
+
+env:
+- TERM=dumb
+
+build:
+- ant
+
+notifications:
+  email:
+    - stephan@syntaktischer-zucker.de
+  on_success: always
+  on_failure: always
