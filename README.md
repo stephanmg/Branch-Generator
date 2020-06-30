@@ -35,6 +35,7 @@ According to Rall and Rinzel 1973 the sum of radii of child branches at each bra
 the parent branch radius also raised to the power of 3/2 (Rall's 3/2 power rule). The user can specify these radii with method *Rall*.
 
 ## Usage (linear)
+The following command will generate an unbranched cable with length 10, start radius of 2 and end radius of 1. There will be inserted 10 points leading to 9 segments respectively edges.
 `java -jar Branch-Generator.jar method linear --filename unbranched --l0 10 --r0 2 --r1 1 --n 10`.
 
 ## Options
