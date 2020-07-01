@@ -8,10 +8,6 @@ addons:
     packages:
       - ant
 
-jdk:
-  - oraclejdk9
-  - openjdk9
-
 dist:
 - xenial
 

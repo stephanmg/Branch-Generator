@@ -1,11 +1,32 @@
 image: Visual Studio 2019
 
 install:
-  - ps: Start-FileDownload  https://github.com/JetBrains/kotlin/releases/download/v1.3.72/kotlin-native-windows-1.3.72.zip 
-  - 7z e -y kotlin-native-windows-1.3.72.zip
-
-build_script:
-  - SET JAVA_HOME=C:\Program Files\Java\jdk11
-  - SET PATH=%JAVA_HOME%\bin;%PATH%
+  - wsl sudo apt-get update
+  - wsl sudo apt-get install -y zip
+  - wsl sudo apt-get install -y default-jdk-headless
+  - curl -s "https://get.sdkman.io" | wsl bash
+  - wsl echo $(pwd)
+  - wsl source "/home/appveyor/.sdkman/bin/sdkman-init.sh"
+  - wsl echo $PATH
+  - wsl ls -al /home/appveyor/.sdkman
+  - wsl ls -al /home/appveyor/.sdkman/candidates
+  - wsl ls -al /home/appveyor/.sdkman/bin
+  - wsl ls -R /home/appveyor/.sdkman/
+  - wsl cat /home/appveyor/.bashrc
+  - wsl bash -c "echo source /home/appveyor/.bashrc >> /home/appveyor/.bash_profile"
+  - wsl bash -c "echo source /home/appveyor/.bashrc >> /home/appveyor/.profile"
+  - wsl cat /home/appveyor/.sdkman/bin/sdkman-init.sh 
+  - ps: wsl bash -c "source /home/appveyor/.sdkman/bin/sdkman-init.sh && sdk install kotlin &> /dev/null" 
+  - wsl ls -al /home/appveyor/.sdkman
+  - wsl ls -al /home/appveyor/.sdkman/candidates
+  - wsl ls -al /home/appveyor/.sdkman/bin
+  - wsl ls -R /home/appveyor/.sdkman/
   
- # - kotlinc-native src\BranchGenerator.kt -o BranchGenerator.exe
+  
+  
+environment:
+  JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
+
+build_script:  
+  - ps: wsl bash -c "/home/appveyor/.sdkman/candidates/kotlin/1.3.72/bin/kotlinc src/BranchGenerator.kt -d BranchGenerator.exe"
+
