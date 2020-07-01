@@ -3,8 +3,8 @@ Generates 2-way dendritic branches with variable branching angle and branch leng
 as well as linear branches. A simple single point soma wull be included as well.
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/40d57a5293af44d8982bbb4dbdd551b8)](https://app.codacy.com/manual/stephan_5/Branch-Generator?utm_source=github.com&utm_medium=referral&utm_content=stephanmg/Branch-Generator&utm_campaign=Badge_Grade_Dashboard)
-[![Build Status (Linux)](https://travis-ci.org/stephanmg/Branch-Generator.svg?branch=master)](https://travis-ci.org/stephanmg/Branch-Generator)
-[![Build Status (OSX)](https://travis-ci.org/stephanmg/Branch-Generator.svg?branch=master)](https://travis-ci.org/stephanmg/Branch-Generator)
+[![Build status (Linux/OSX)](https://travis-ci.org/stephanmg/Branch-Generator.svg?branch=master)](https://travis-ci.org/stephanmg/Branch-Generator)
+[![Build status (Windows)](https://ci.appveyor.com/api/projects/status/bs9ywjrehwdtoqii?svg=true)](https://ci.appveyor.com/project/stephanmg/branch-generator)
 [![License: Artistic-2.0](https://img.shields.io/badge/License-Artistic%202.0-0298c3.svg)](https://opensource.org/licenses/Artistic-2.0)
 
 ## Build
