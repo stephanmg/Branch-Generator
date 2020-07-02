@@ -68,4 +68,5 @@ in the **UGX** file format by invoking the following `ugshell` **call**:
 Two way branch geometries are stored [here](https://temple.app.box.com/folder/116285138468) and linear cables [there](https://temple.app.box.com/folder/116511573967).
 
 # References
-Rall W, Rinzel J. Branch input resistance and steady attenuation for input to one branch of a dendritic neuron model. Biophys J. 1973;13(7):648-687. doi:10.1016/S0006-3495(73)86014-X
+- Rall W, Rinzel J. Branch input resistance and steady attenuation for input to one branch of a dendritic neuron model. Biophys J. 1973;13(7):648-687. doi:10.1016/S0006-3495(73)86014-X
+- [Article in Scholarpedia](http://www.scholarpedia.org/article/Rall_model)
