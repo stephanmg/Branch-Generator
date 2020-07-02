@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
         println("       Additional options for the methods:")
         println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH --l2 LEFT_CHILD_LENGTH")
         println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
-        println("          3. RALL: --r0 PARENT_BRANCH_RADIUS --r1 LEFT_CHILD_RADIUS --r2 RIGHT_CHILD_RADIUS")
+        println("          3. RALL: --r1 LEFT_CHILD_RADIUS --r2 RIGHT_CHILD_RADIUS (Parent branch radius will be calculated)")
         println("          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS")
     }
 
@@ -80,7 +80,22 @@ fun main(args: Array<String>) {
 
         // Rall's 3/2 power rule for child neurites wrt parent's radius
         "rall" -> {
-            error("Not yet implemented.")
+            val leftChildRadius = (mapping["--d1"] ?: error(msg("--d1"))).toDouble()
+            val rightChildRadius = (mapping["--d2"] ?: error(msg("--d2"))).toDouble()
+            val parentBranchRadius = (leftChildRadius.pow(3/2) + leftChildRadius.pow(3/2)).pow(2/3)
+            generateTwoWayBranch(
+                (mapping["--filename"] ?: error(msg("--filename"))).toString(),
+                (mapping["--l0"] ?: error(msg("--l0"))).toDouble(),
+                (mapping["--l1"] ?: error(msg("--l1"))).toDouble(),
+                (mapping["--l2"] ?: error(msg("--l2"))).toDouble(),
+                parentBranchRadius,
+                (mapping["--angle"] ?: error(msg("--angle"))).toDouble(),
+                (mapping["--n"] ?: error(msg("--n"))).toInt(),
+                parentBranchRadius,
+                leftChildRadius,
+                rightChildRadius,
+                false
+            )
         }
 
         // linear strategy will create an unbranched cable
