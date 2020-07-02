@@ -1,6 +1,7 @@
 image: Visual Studio 2019
 
 install:
+  - dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
   - wsl sudo apt-get update
   - wsl sudo apt-get install -y zip
   - wsl sudo apt-get install -y default-jdk-headless
