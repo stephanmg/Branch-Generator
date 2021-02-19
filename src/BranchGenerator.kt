@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
     fun getArguments(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
             acc: MutableList<MutableList<String>>, s: String ->
                 acc.apply {
-                    if (s.startsWith("-")) add(mutableListOf(s))
+                    if (s.startsWith("--")) add(mutableListOf(s))
                     else last().add(s)
               }
     }.associate { it[0] to it.drop(1).firstOrNull() }
@@ -148,7 +148,7 @@ enum class SWCType(val id: Int) {
 fun generateZigZagCable(bendingAngle: Double, cableDiameter: Double = 1.0) {
     /// check input consistency
     require(0 < abs(bendingAngle) && abs(bendingAngle) < 90) { "Angle (in deg) must be in range ]0, 90[." }
-    val segmentLength: Double = 5.0
+    val segmentLength: Double = 10.0
 
     /// bendingAngle
     val bendingAngleInRad = (bendingAngle * PI / 180.0)

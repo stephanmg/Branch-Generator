@@ -16,5 +16,5 @@ environment:
   JAVA_HOME: C:\Program Files (x86)\Java\jdk1.8.0
 
 build_script:  
-  - ps: wsl bash -c "/home/appveyor/.sdkman/candidates/kotlin/1.4.10/bin/kotlinc src/BranchGenerator.kt -d BranchGenerator
+  - ps: wsl bash -c "/home/appveyor/.sdkman/candidates/kotlin/1.4.10/bin/kotlinc src/BranchGenerator.kt -d BranchGenerator"
 
