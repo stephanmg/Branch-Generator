@@ -17,6 +17,10 @@ as well as linear branches. A simple single point soma wull be included as well.
 - Type `ant` in `$CWD`
 Note that it might be necessary to edit *build.properties* in `$CWD`.
 
+## Alternative Build (Kotlinc)
+- Navigaegt to `$CWD`
+- Type `kotlinc src/BranchGenerator.kt -include-runtime -d Branch-Generator.jar`
+
 ## Usage (constant radii)
 `java -jar Branch-Generator.jar --method constant --filename test --l0 100 --l1 100 --l2 100 --d0 10 --angle 90 --n 2`
 
@@ -37,7 +41,11 @@ the parent branch radius also raised to the power of 3/2 (Rall's 3/2 power rule)
 ## Usage (linear)
 The following command will generate an unbranched cable with length 10, start radius of 2 and end radius of 1. There will be inserted 10 points leading to 9 segments respectively edges:
 
-`java -jar Branch-Generator.jar method linear --filename unbranched --l0 10 --r0 2 --r1 1 --n 10`.
+`java -jar Branch-Generator.jar --method linear --filename unbranched --l0 10 --r0 2 --r1 1 --n 10`.
+
+## Usage (bended)
+Create bended linear cable with length 10 and bending angle 60 degrees
+`java -jar Branch-Generator.jar --method bende --angle 60 --length 10`.
 
 ## Options
 For explanation of command line arguments, execute: `java -jar Y-Generator.jar`:

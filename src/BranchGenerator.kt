@@ -13,17 +13,19 @@ fun main(args: Array<String>) {
         val program = System.getProperty("sun.java.command").split(".")[0]
         println("Usage: $program --method CONSTANT,TAPERING --filename FILENAME --angle ANGLE --n NUM_POINTS")
         println("       Additional options for the methods:")
-        println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH -l1 RIGHT_CHILD_LENGTH --l2 LEFT_CHILD_LENGTH")
+        println("          1. CONSTANT: --d0 DIAMETER, --l0 PARENT_LENGTH --l1 RIGHT_CHILD_LENGTH --l2 LEFT_CHILD_LENGTH")
         println("          2. TAPERING: --d1 DIAMETER_RIGHT_CHILD_END_POINT --d2 DIAMETER_LEFT_CHILD_END_POINT")
         println("          3. RALL: --r1 LEFT_CHILD_RADIUS --r2 RIGHT_CHILD_RADIUS (Parent branch radius will be calculated)")
         println("          4. LINEAR: --r0 START_RADIUS --r1 END_RADIUS --l0 LINEAR_CABLE_LENGTH --n NUM_POINTS")
+        println("          5. BENDED: --angle BENDING_ANGLE")
+        println("          6. ZIG-ZAG --angle ZIG_ANGLE")
     }
 
     // parse CLI arguments
     fun getArguments(args: Array<String>): Map<String, String?> = args.fold(mutableListOf()) {
             acc: MutableList<MutableList<String>>, s: String ->
                 acc.apply {
-                    if (s.startsWith('-')) add(mutableListOf(s))
+                    if (s.startsWith("-")) add(mutableListOf(s))
                     else last().add(s)
               }
     }.associate { it[0] to it.drop(1).firstOrNull() }
@@ -109,6 +111,18 @@ fun main(args: Array<String>) {
             )
         }
 
+        "bended" -> {
+            generateBendedCable(
+                (mapping["--angle"] ?: error(msg("--angle"))).toDouble()
+             )
+        }
+
+        "zig-zag" -> {
+            generateZigZagCable(
+                (mapping["--angle"] ?: error(msg("--angle"))).toDouble()
+            )
+        }
+
         // if not any available options chosen exit gracefully and print usage
         else -> {
             usage()
@@ -124,6 +138,65 @@ fun main(args: Array<String>) {
 enum class SWCType(val id: Int) {
     SOMA(1),
     DEND(3)
+}
+
+/**
+ * @brief generates a zig-zag cable
+ * @param bendingAngle angle of bending in degree
+ * @param cableDiameter uniform cable diameter
+ */
+fun generateZigZagCable(bendingAngle: Double, cableDiameter: Double = 1.0) {
+    /// check input consistency
+    require(0 < abs(bendingAngle) && abs(bendingAngle) < 90) { "Angle (in deg) must be in range ]0, 90[." }
+    val segmentLength: Double = 5.0
+
+    /// bendingAngle
+    val bendingAngleInRad = (bendingAngle * PI / 180.0)
+    val bendingAngleSign = sign(bendingAngle)
+
+    /// calculate positions
+    val cableOrigin = doubleArrayOf(0.0, -segmentLength, 0.0)
+    val startOfZig = doubleArrayOf(segmentLength*cos(bendingAngleInRad+bendingAngleSign*PI/2.0),
+                          segmentLength*sin(bendingAngleInRad+bendingAngleSign*PI/2.0),
+                          0.0);
+    /// save zigzag cable
+    File("zigzag_cable_angle=${bendingAngle}.swc").printWriter().use { out ->
+        out.println("1 ${SWCType.SOMA.id} ${cableOrigin[0]} ${cableOrigin[1]-segmentLength} ${cableOrigin[2]} ${cableDiameter} -1") // soma
+        out.println("2 ${SWCType.DEND.id} ${cableOrigin[0]} ${cableOrigin[1]} ${cableOrigin[2]} ${cableDiameter} 1") // dendrite
+        out.println("3 ${SWCType.DEND.id} ${cableOrigin[0]} 0 ${cableOrigin[2]} ${cableDiameter} 2") // start of zig
+        out.println("4 ${SWCType.DEND.id} ${startOfZig[0]} ${startOfZig[1]} ${startOfZig[2]} ${cableDiameter} 3") // end of zig
+        out.println("5 ${SWCType.DEND.id} ${cableOrigin[0]} ${startOfZig[1]+segmentLength} ${cableOrigin[2]} ${cableDiameter} 4") // start of zag
+        out.println("6 ${SWCType.DEND.id} ${startOfZig[0]} ${startOfZig[1]+2*segmentLength} ${startOfZig[2]} ${cableDiameter} 5") // end of zag
+    }
+}
+
+/**
+ * @brief generate bended cables of variable length an diameter
+ * @param bendingAngle angle of bending in degree
+ * @param cableDiameter uniform cable diameter
+ * @param cableHalfLength half the length of the desired cable length
+ */
+fun generateBendedCable(bendingAngle: Double, cableDiameter: Double = 1.0, cableHalfLength: Double = 5.0) {
+    /// check input consistency
+    require(0 <= abs(bendingAngle) && abs(bendingAngle) <= 180) { "Angle (in deg) must be in range [-180, 180]." }
+    require(cableHalfLength > 0) { "Length of cable must be strictly positive." }
+
+    /// bendingAngle
+    val bendingAngleInRad = (bendingAngle * PI / 180.0)
+    val bendingAngleSign = sign(bendingAngle)
+
+    /// calculate positions
+    val cableOrigin = doubleArrayOf(0.0, -cableHalfLength, 0.0)
+    val cableEnd = doubleArrayOf(cableHalfLength*cos(bendingAngleInRad+bendingAngleSign*PI/2.0),
+                          cableHalfLength*sin(bendingAngleInRad+bendingAngleSign*PI/2.0),
+                          0.0);
+    /// save bended cable
+    File("bended_cable_angle=${bendingAngle}.swc").printWriter().use { out ->
+        out.println("1 ${SWCType.SOMA.id} ${cableOrigin[0]} ${cableOrigin[1]-cableHalfLength} ${cableOrigin[2]} ${cableDiameter} -1") // soma
+        out.println("2 ${SWCType.DEND.id} ${cableOrigin[0]} ${cableOrigin[1]} ${cableOrigin[2]} ${cableDiameter} 1") // dendrite
+        out.println("3 ${SWCType.DEND.id} ${cableOrigin[0]} 0 ${cableOrigin[2]} ${cableDiameter} 2") // dendrite
+        out.println("4 ${SWCType.DEND.id} ${cableEnd[0]} ${cableEnd[1]} ${cableEnd[2]} ${cableDiameter} 3") // dendrite
+    }
 }
 
 /**
