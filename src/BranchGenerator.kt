@@ -100,7 +100,7 @@ fun main(args: Array<String>) {
             )
         }
 
-        // linear strategy will create an unbranched cable
+        // linear strategy creates non-branching elongated cables
         "linear" -> {
             generateLinearCable(
                 (mapping["--filename"] ?: error(msg("--filename"))).toString(),
@@ -111,12 +111,14 @@ fun main(args: Array<String>) {
             )
         }
 
+        // bended cables with custom angle
         "bended" -> {
             generateBendedCable(
                 (mapping["--angle"] ?: error(msg("--angle"))).toDouble()
              )
         }
 
+        /// simple zig-zag geometries with custom angle
         "zig-zag" -> {
             generateZigZagCable(
                 (mapping["--angle"] ?: error(msg("--angle"))).toDouble()
